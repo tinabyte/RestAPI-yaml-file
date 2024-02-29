@@ -1,0 +1,92 @@
+openapi: 3.0.3
+info:
+  title: Movie Theater Managing Listings API
+  description: A simple API for managing movie listings and bookings at a theater.
+  version: "1.0.0"
+servers:
+  - url: https://moveiswebsite.com/api
+paths:
+  /movies:
+    get:
+      summary: List all available movies
+      operationId: listMovies
+      responses:
+        '250':
+          description: A list of movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        '404':
+          description: No movies found
+  /bookings:
+    post:
+      summary: Book a seat for a movie
+      operationId: bookSeat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '201':
+          description: Booking successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '404':
+          description: Not Found/Bad Request
+  /bookings/{bookingId}:
+    delete:
+      summary: Cancel a booking
+      operationId: cancelBooking
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Unique identifier of the booking to cancel
+      responses:
+        '200':
+          description: OK
+        '404':
+          description:  Not found
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    Movie:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the movie
+        title:
+          type: string
+          description: Title of the movie
+    BookingRequest:
+      type: object
+      required:
+        - movieId
+        - seatId
+      properties:
+        movieId:
+          type: string
+          description: ID of the movie for booking purposes
+        seatId:
+          type: string
+          description: ID of the movie for booking purposes
+    BookingResponse:
+      type: object
+      properties:
+        bookingId:
+          type: String
+          description: Unique identifier for the booking
+        status:
+          type: String
+          description: State of the booking (insufficient funds, successful, etc)
